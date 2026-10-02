@@ -1,4 +1,4 @@
-﻿import * as THREE from 'three';
+import * as THREE from 'three';
 
 // --- Initial Animations ---
 if (window.gsap) {
@@ -182,40 +182,6 @@ const loadCatalog = async () => {
 document.addEventListener("DOMContentLoaded", () => {
     loadCatalog();
     
-    // --- Lógica del formulario de subida ---
-    const form = document.getElementById('uploadForm');
-    if (form) {
-        document.getElementById('generateBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('generateBtn');
-            btn.innerText = 'Subiendo...';
-            btn.disabled = true;
-
-            const formData = new FormData();
-            formData.append('title', document.getElementById('designTitle').value);
-            formData.append('description', document.getElementById('designDesc').value);
-            formData.append('gender', document.getElementById('designGender').value);
-            formData.append('videoFile', document.getElementById('videoFile').files[0]);
-            formData.append('logoFile', document.getElementById('logoFile').files[0]);
-
-            try {
-                const res = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (res.ok) {
-                    alert('Â¡Diseño subido con éxito!');
-                    form.reset();
-                } else {
-                    alert('Error en la subida.');
-                }
-            } catch (err) {
-                alert('Fallo de red.');
-            } finally {
-                btn.innerText = 'Procesar Diseño';
-                btn.disabled = false;
-            }
-        });
-    }
+    // Upload logic moved to design-upload.html
 });
 
