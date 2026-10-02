@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Portal | Upload Design</title>
+    <title>Dev Portal | Subir Diseño</title>
     <link rel="icon" type="image/png" href="./logo/logo_sinfondo.png">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
@@ -15,105 +15,105 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 2rem;
         }
         .upload-container {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 208, 47, 0.2);
+            background: rgba(255, 255, 255, 0.05);
             padding: 3rem;
             border-radius: 12px;
+            border: 1px solid rgba(255, 208, 47, 0.2);
             width: 100%;
             max-width: 600px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .upload-header {
+        .upload-container h2 {
+            color: var(--color-primary);
             text-align: center;
             margin-bottom: 2rem;
-        }
-        .upload-header h2 {
-            color: var(--color-primary);
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
         }
         .form-group {
             margin-bottom: 1.5rem;
-            display: flex;
-            flex-direction: column;
         }
         .form-group label {
-            font-family: 'Oswald', sans-serif;
+            display: block;
             margin-bottom: 0.5rem;
-            color: #ccc;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .form-group input, .form-group textarea, .form-group select {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 1rem;
             font-family: 'Poppins', sans-serif;
-            border-radius: 6px;
-            outline: none;
-            transition: border-color 0.3s ease;
+            color: #ddd;
         }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            border-color: var(--color-primary);
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
         }
         .form-group input[type="file"] {
-            padding: 0.8rem;
-            cursor: pointer;
+            padding: 0.5rem;
+            background: transparent;
         }
         .btn-submit {
             width: 100%;
             padding: 1rem;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             margin-top: 1rem;
-            cursor: pointer;
         }
-        .warning-text {
-            font-size: 0.85rem;
-            color: #ff5555;
-            margin-top: 1rem;
+        .back-link {
+            display: block;
             text-align: center;
+            margin-top: 1.5rem;
+            color: #aaa;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: var(--color-primary);
         }
     </style>
 </head>
 <body>
 
     <div class="upload-container">
-        <div class="upload-header">
-            <h2 class="gta-font">Subir DiseÃ±o</h2>
-            <p>Portal interno de desarrollo. SrMartinez Only.</p> 
-            <button onclick="logout()" style="margin-top:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar SesiÃ³n</button>
-        </div>
-
         <form id="uploadForm">
+            <h2 class="gta-font">Subir Diseño</h2>
+            
             <div class="form-group">
-                <label for="designTitle">TÃ­tulo del DiseÃ±o / OrganizaciÃ³n</label>
-                <input type="text" id="designTitle" placeholder="Ej: Vanilla Unicorn" required>
+                <label for="title">Título del Diseño / Organización</label>
+                <input type="text" id="title" placeholder="Ej: Akuma Motors Club" required>
             </div>
 
             <div class="form-group">
-                <label for="designDesc">DescripciÃ³n</label>
-                <textarea id="designDesc" rows="3" placeholder="DescripciÃ³n breve de las prendas..." required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="designGender">GÃ©nero</label>
-                <select id="designGender" required>
-                    <option value="Hombre">Hombre</option>
-                    <option value="Mujer">Mujer</option>
-                    <option value="Unisex">Unisex</option>
+                <label for="category">Categoría (Sección)</label>
+                <select id="category" required>
+                    <option value="Prendas Personalizadas">Prendas Personalizadas</option>
+                    <option value="Vehículos Personalizados">Vehículos Personalizados</option>
+                    <option value="Mapeos">Mapeos</option>
+                    <option value="Scripts">Scripts</option>
+                    <option value="Otros">Otros</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="videoFile">Video de Muestra (.mp4)</label>
+                <label for="gender">Género (Si aplica)</label>
+                <select id="gender" required>
+                    <option value="Hombre">Hombre</option>
+                    <option value="Mujer">Mujer</option>
+                    <option value="Unisex">Unisex</option>
+                    <option value="N/A">No Aplica</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Descripción</label>
+                <textarea id="description" rows="3" placeholder="Detalles del diseño..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="videoFile">Video MP4 (Showcase)</label>
                 <input type="file" id="videoFile" accept="video/mp4" required>
             </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="logoFile">Logo de Organización (.png)</label>
                 <input type="file" id="logoFile" accept="image/png" required>
             </div>
@@ -123,58 +123,55 @@
                 <input type="file" id="cityLogoFile" accept="image/png, image/jpeg">
             </div>
 
-            <button type="button" class="btn-primary btn-submit" id="generateBtn">Procesar DiseÃ±o</button>
-            <a href="/design-dashboard.html" style="display:block; text-align:center; margin-top:1rem; color:var(--color-primary); font-family:'Poppins', sans-serif;">Ir al Panel de Control</a>
+            <button type="button" class="btn-primary btn-submit" id="generateBtn">Procesar Diseño</button>
+            <a href="/design-dashboard.html" class="back-link">Ir al Panel de Control</a>
         </form>
     </div>
 
-<script>
-const logout = async () => { await fetch('/api/logout', { method: 'POST' }); window.location.href = '/login.html'; };
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('generateBtn');
+            btn.innerText = 'Subiendo archivos...';
+            btn.disabled = true;
 
-const btn = document.getElementById('generateBtn');
-if (btn) {
-    btn.addEventListener('click', async () => {
-        const form = document.getElementById('uploadForm');
-        if(!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-        
-        btn.innerText = 'Subiendo...';
-        btn.disabled = true;
-
-        const formData = new FormData();
-        formData.append('title', document.getElementById('designTitle').value);
-        formData.append('description', document.getElementById('designDesc').value);
-        formData.append('gender', document.getElementById('designGender').value);
-                formData.append('videoFile', document.getElementById('videoFile').files[0]);
-        formData.append('logoFile', document.getElementById('logoFile').files[0]);
-        const cityLogo = document.getElementById('cityLogoFile').files[0];
-        if (cityLogo) formData.append('cityLogoFile', cityLogo);
-        formData.append('logoFile', document.getElementById('logoFile').files[0]);
-
-        try {
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            });
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('gender', document.getElementById('gender').value);
             
-            if (res.ok) {
-                alert('Â¡DiseÃ±o subido con Ã©xito!');
-                form.reset();
-            } else {
-                alert('Error en la subida.');
+            formData.append('videoFile', document.getElementById('videoFile').files[0]);
+            formData.append('logoFile', document.getElementById('logoFile').files[0]);
+            const cityLogo = document.getElementById('cityLogoFile').files[0];
+            if (cityLogo) formData.append('cityLogoFile', cityLogo);
+
+            if(!document.getElementById('title').value || !document.getElementById('videoFile').files[0] || !document.getElementById('logoFile').files[0]) {
+                alert('Faltan campos obligatorios');
+                btn.innerText = 'Procesar Diseño';
+                btn.disabled = false;
+                return;
             }
-        } catch (err) {
-            alert('Fallo de red.');
-        } finally {
-            btn.innerText = 'Procesar DiseÃ±o';
-            btn.disabled = false;
-        }
-    });
-}
-</script>
+
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('¡Diseño subido con éxito!');
+                    window.location.href = '/design-dashboard.html';
+                } else {
+                    const err = await res.json();
+                    alert('Error: ' + err.error);
+                }
+            } catch (error) {
+                alert('Fallo de red al conectar con el servidor.');
+            } finally {
+                btn.innerText = 'Procesar Diseño';
+                btn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>
-
-
