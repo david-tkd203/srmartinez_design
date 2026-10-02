@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -83,23 +83,24 @@
 
     <div class="upload-container">
         <div class="upload-header">
-            <h2 class="gta-font">Subir DiseÃ±o</h2>
-            <p>Portal interno de desarrollo. SrMartinez Only.</p> <button onclick="logout()" style="margin-top:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar SesiÃ³n</button>
+            <h2 class="gta-font">Subir Diseño</h2>
+            <p>Portal interno de desarrollo. SrMartinez Only.</p> 
+            <button onclick="logout()" style="margin-top:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar Sesión</button>
         </div>
 
         <form id="uploadForm">
             <div class="form-group">
-                <label for="designTitle">TÃ­tulo del DiseÃ±o / OrganizaciÃ³n</label>
+                <label for="designTitle">Título del Diseño / Organización</label>
                 <input type="text" id="designTitle" placeholder="Ej: Vanilla Unicorn" required>
             </div>
 
             <div class="form-group">
-                <label for="designDesc">DescripciÃ³n</label>
-                <textarea id="designDesc" rows="3" placeholder="DescripciÃ³n breve de las prendas..." required></textarea>
+                <label for="designDesc">Descripción</label>
+                <textarea id="designDesc" rows="3" placeholder="Descripción breve de las prendas..." required></textarea>
             </div>
 
             <div class="form-group">
-                <label for="designGender">GÃ©nero</label>
+                <label for="designGender">Género</label>
                 <select id="designGender" required>
                     <option value="Hombre">Hombre</option>
                     <option value="Mujer">Mujer</option>
@@ -113,11 +114,11 @@
             </div>
 
             <div class="form-group">
-                <label for="logoFile">Logo de OrganizaciÃ³n (.png)</label>
+                <label for="logoFile">Logo de Organización (.png)</label>
                 <input type="file" id="logoFile" accept="image/png" required>
             </div>
 
-            <button type="button" class="btn-primary btn-submit" id="generateBtn">Procesar DiseÃ±o</button>
+            <button type="button" class="btn-primary btn-submit" id="generateBtn">Procesar Diseño</button>
             <a href="/design-dashboard.html" style="display:block; text-align:center; margin-top:1rem; color:var(--color-primary); font-family:'Poppins', sans-serif;">Ir al Panel de Control</a>
         </form>
     </div>
@@ -151,7 +152,7 @@ if (btn) {
             });
             
             if (res.ok) {
-                alert('¡DiseÃ±o subido con Ã©xito!');
+                alert('¡Diseño subido con éxito!');
                 form.reset();
             } else {
                 alert('Error en la subida.');
@@ -159,7 +160,7 @@ if (btn) {
         } catch (err) {
             alert('Fallo de red.');
         } finally {
-            btn.innerText = 'Procesar DiseÃ±o';
+            btn.innerText = 'Procesar Diseño';
             btn.disabled = false;
         }
     });
@@ -167,4 +168,3 @@ if (btn) {
 </script>
 </body>
 </html>
-

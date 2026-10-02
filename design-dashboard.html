@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -70,7 +70,10 @@
     <div class="dashboard-container">
         <div class="header-dash">
             <h2 class="gta-font">Panel de Diseños</h2>
-            <a href="/design-upload.html" class="btn-primary">Subir Nuevo</a> <button onclick="logout()" style="margin-left:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar Sesión</button>
+            <div>
+                <a href="/design-upload.html" class="btn-primary">Subir Nuevo</a>
+                <button onclick="logout()" style="margin-left:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar Sesión</button>
+            </div>
         </div>
 
         <div class="grid-dash" id="dashGrid">
@@ -79,6 +82,11 @@
     </div>
 
     <script>
+        const logout = async () => {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/login.html';
+        };
+
         const loadDashboard = async () => {
             const grid = document.getElementById('dashGrid');
             try {
@@ -148,14 +156,6 @@
         };
 
         document.addEventListener('DOMContentLoaded', loadDashboard);
-            const logout = async () => {
-            await fetch('/api/logout', { method: 'POST' });
-            window.location.href = '/login.html';
-        };
     </script>
 </body>
 </html>
-
-
-
-
