@@ -13,20 +13,24 @@ COPY . .
 # Build the project (output will be in the 'dist' folder)
 RUN npm run build
 
-# Stage 2: Serve with Nginx
-FROM nginx:alpine
+# Stage 2: Serve with Node.js Backend
+FROM node:22-alpine
 
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Copy custom proxy configuration
-COPY nginx/default.conf /etc/nginx/conf.d/
+# Copy backend dependencies
+COPY package.json package-lock.json* ./
+RUN npm install --production
 
-# Copy built static files from the builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy backend source code and seed data
+COPY backend ./backend
 
-# Expose port 80
-EXPOSE 80
+# Copy built frontend from stage 1
+COPY --from=builder /app/dist ./dist
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Create upload directory (it will be created by multer, but let's be safe)
+RUN mkdir -p ./dist/videos\ clothes
+
+EXPOSE 3000
+
+CMD ["node", "backend/server.js"]

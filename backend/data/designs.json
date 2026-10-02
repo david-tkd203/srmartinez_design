@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1",
+    "title": "Akuma Motors Club",
+    "description": "Organización Delictual. Renombre, identidad y respeto en las calles.",
+    "gender": "Hombre",
+    "videoUrl": "/videos clothes/akuma motors/hombre/Video Project (2).mp4",
+    "logoUrl": "/videos clothes/akuma motors/akuma.png",
+    "discordUrl": "https://discord.com/users/682328456746631340"
+  },
+  {
+    "id": "2",
+    "title": "Benny's Motor Works",
+    "description": "Taller Mecánico. Indumentaria que resalta calidad y excelencia en el servicio.",
+    "gender": "Hombre",
+    "videoUrl": "/videos clothes/benny's/hombre/Video Project (1).mp4",
+    "logoUrl": "/videos clothes/benny's/bennys.png",
+    "discordUrl": "https://discord.com/users/682328456746631340"
+  }
+]

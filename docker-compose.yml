@@ -9,8 +9,8 @@ services:
     #  - "80:80" (Removido para que Dokploy se encargue del enrutamiento)
     expose:
       - "80"
-    volumes:
-      # Mount Nginx config so you can update it without rebuilding the whole image
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     environment:
       - VIRTUAL_HOST=srmartinez.site,www.srmartinez.site
+    volumes:
+      - ./backend-data:/app/backend/data
+      - ./uploads:/app/backend/uploads
