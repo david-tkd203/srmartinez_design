@@ -4,6 +4,11 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,6 +16,47 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+
+// Credenciales
+const ADMIN_USER = process.env.ADMIN_USER || 'admin';
+const ADMIN_PASS = process.env.ADMIN_PASS || 'admin';
+const JWT_SECRET = process.env.JWT_SECRET || 'secreto_temporal';
+
+// Middleware de autenticación
+const verifyAuth = (req, res, next) => {
+    const token = req.cookies.auth_token;
+    if (!token) return res.status(401).json({ error: 'No autorizado' });
+
+    try {
+        jwt.verify(token, JWT_SECRET);
+        next();
+    } catch (error) {
+        res.status(401).json({ error: 'Token inválido o expirado' });
+    }
+};
+
+// Autenticación Endpoints
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
+        const token = jwt.sign({ user: username }, JWT_SECRET, { expiresIn: '24h' });
+        // HttpOnly impide que JavaScript acceda a la cookie (Protección XSS)
+        res.cookie('auth_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 });
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
+});
+
+app.post('/api/logout', (req, res) => {
+    res.clearCookie('auth_token');
+    res.json({ success: true });
+});
+
+app.get('/api/check-auth', verifyAuth, (req, res) => {
+    res.json({ success: true, user: ADMIN_USER });
+});
 
 // Base de datos persistente
 const dbDir = path.join(__dirname, 'data');
@@ -21,7 +67,6 @@ if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
 }
 if (!fs.existsSync(dbPath)) {
-    // Si no existe, podemos inicializarla con los dos diseños por defecto
     const seedData = [
       {
         "id": "1",
@@ -51,13 +96,8 @@ const storage = multer.diskStorage({
         const title = req.body.title ? req.body.title.toLowerCase().trim() : 'nuevo_diseno';
         const gender = req.body.gender ? req.body.gender.toLowerCase() : 'hombre';
         
-        // Guardamos en backend/uploads para que no se borren
         let destPath = path.join(__dirname, 'uploads', title);
-        
-        if (file.fieldname === 'videoFile') {
-            destPath = path.join(destPath, gender);
-        }
-
+        if (file.fieldname === 'videoFile') destPath = path.join(destPath, gender);
         fs.mkdirSync(destPath, { recursive: true });
         cb(null, destPath);
     },
@@ -70,17 +110,18 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// API Endpoints PÚBLICOS
 app.get('/api/designs', (req, res) => {
     try {
         const data = fs.readFileSync(dbPath, 'utf8');
         res.json(JSON.parse(data));
     } catch (error) {
-        console.error("Error leyendo DB:", error);
         res.status(500).json({ error: "Error leyendo la base de datos" });
     }
 });
 
-app.post('/api/upload', upload.fields([{ name: 'videoFile' }, { name: 'logoFile' }]), (req, res) => {
+// API Endpoints PRIVADOS (protegidos por verifyAuth)
+app.post('/api/upload', verifyAuth, upload.fields([{ name: 'videoFile' }, { name: 'logoFile' }]), (req, res) => {
     try {
         const { title, description, gender } = req.body;
         const videoFile = req.files['videoFile'][0];
@@ -93,12 +134,7 @@ app.post('/api/upload', upload.fields([{ name: 'videoFile' }, { name: 'logoFile'
         const logoUrl = `/uploads/${orgFolder}/${logoFile.filename}`;
 
         const newDesign = {
-            id: Date.now().toString(),
-            title,
-            description,
-            gender,
-            videoUrl,
-            logoUrl,
+            id: Date.now().toString(), title, description, gender, videoUrl, logoUrl,
             discordUrl: "https://discord.com/users/682328456746631340"
         };
 
@@ -108,12 +144,11 @@ app.post('/api/upload', upload.fields([{ name: 'videoFile' }, { name: 'logoFile'
 
         res.json({ success: true, design: newDesign });
     } catch (error) {
-        console.error("Error procesando subida:", error);
         res.status(500).json({ error: "Fallo interno al guardar los archivos" });
     }
 });
 
-app.delete('/api/designs/:id', (req, res) => {
+app.delete('/api/designs/:id', verifyAuth, (req, res) => {
     try {
         const id = req.params.id;
         let currentData = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
@@ -125,7 +160,7 @@ app.delete('/api/designs/:id', (req, res) => {
     }
 });
 
-app.put('/api/designs/:id', (req, res) => {
+app.put('/api/designs/:id', verifyAuth, (req, res) => {
     try {
         const id = req.params.id;
         const { title, description, gender } = req.body;
@@ -144,6 +179,21 @@ app.put('/api/designs/:id', (req, res) => {
     } catch (error) {
         res.status(500).json({ error: "Error al editar el diseño" });
     }
+});
+
+// Interceptor de seguridad para páginas protegidas (Frontend Routing Protection)
+app.use((req, res, next) => {
+    if (req.path === '/design-upload.html' || req.path === '/design-dashboard.html') {
+        const token = req.cookies.auth_token;
+        if (!token) return res.redirect('/login.html');
+        try {
+            jwt.verify(token, JWT_SECRET);
+            return next();
+        } catch (e) {
+            return res.redirect('/login.html');
+        }
+    }
+    next();
 });
 
 // Servir frontend compilado

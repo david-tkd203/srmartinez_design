@@ -7,7 +7,8 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
         upload: resolve(import.meta.dirname, 'design-upload.html'),
-        dashboard: resolve(import.meta.dirname, 'design-dashboard.html')
+        dashboard: resolve(import.meta.dirname, 'design-dashboard.html'),
+        login: resolve(import.meta.dirname, 'login.html')
       }
     }
   }

@@ -11,6 +11,8 @@ services:
       - "80"
     environment:
       - VIRTUAL_HOST=srmartinez.site,www.srmartinez.site
+    env_file:
+      - .env
     volumes:
       - ./backend-data:/app/backend/data
       - ./uploads:/app/backend/uploads
