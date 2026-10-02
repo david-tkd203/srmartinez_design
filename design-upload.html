@@ -84,13 +84,14 @@
 
             <div class="form-group">
                 <label for="category">Categoría (Sección)</label>
-                <select id="category" required>
-                    <option value="Prendas Personalizadas">Prendas Personalizadas</option>
-                    <option value="Vehículos Personalizados">Vehículos Personalizados</option>
-                    <option value="Mapeos">Mapeos</option>
-                    <option value="Scripts">Scripts</option>
-                    <option value="Otros">Otros</option>
-                </select>
+                <input type="text" id="category" list="category-options" placeholder="Ej: Prendas Personalizadas" value="Prendas Personalizadas" required>
+                <datalist id="category-options">
+                    <option value="Prendas Personalizadas"></option>
+                    <option value="Vehículos Personalizados"></option>
+                    <option value="Mapeos"></option>
+                    <option value="Scripts"></option>
+                    <option value="Otros"></option>
+                </datalist>
             </div>
 
             <div class="form-group">

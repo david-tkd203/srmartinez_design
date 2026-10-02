@@ -70,6 +70,14 @@
 <body>
 
     <div class="dashboard-container">
+        <datalist id="category-options">
+            <option value="Prendas Personalizadas"></option>
+            <option value="Vehículos Personalizados"></option>
+            <option value="Mapeos"></option>
+            <option value="Scripts"></option>
+            <option value="Otros"></option>
+        </datalist>
+
         <div class="header-dash">
             <h2 class="gta-font">Panel de Diseños</h2>
             <div>
@@ -112,13 +120,7 @@
                         </div>
                         <div>
                             <label>Categoría:</label>
-                            <select id="category-${d.id}">
-                                <option value="Prendas Personalizadas" ${d.category === 'Prendas Personalizadas' || !d.category ? 'selected' : ''}>Prendas Personalizadas</option>
-                                <option value="Vehículos Personalizados" ${d.category === 'Vehículos Personalizados' ? 'selected' : ''}>Vehículos Personalizados</option>
-                                <option value="Mapeos" ${d.category === 'Mapeos' ? 'selected' : ''}>Mapeos</option>
-                                <option value="Scripts" ${d.category === 'Scripts' ? 'selected' : ''}>Scripts</option>
-                                <option value="Otros" ${d.category === 'Otros' ? 'selected' : ''}>Otros</option>
-                            </select>
+                            <input type="text" id="category-${d.id}" value="${d.category || 'Prendas Personalizadas'}" list="category-options" placeholder="Nueva Categoría">
                         </div>
                         <div>
                             <label>Género (Si aplica):</label>
