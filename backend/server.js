@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
 import fs from 'fs';
@@ -110,7 +110,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// API Endpoints PÚBLICOS
+// API Endpoints PÃšBLICOS
 app.get('/api/designs', (req, res) => {
     try {
         const data = fs.readFileSync(dbPath, 'utf8');
@@ -211,3 +211,4 @@ const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
     console.log(`Backend de SrMartinez corriendo en el puerto ${PORT}`);
 });
+

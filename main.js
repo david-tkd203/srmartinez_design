@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+﻿import * as THREE from 'three';
 
 // --- Initial Animations ---
 if (window.gsap) {
@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 
                 if (res.ok) {
-                    alert('¡Diseño subido con éxito!');
+                    alert('Â¡Diseño subido con éxito!');
                     form.reset();
                 } else {
                     alert('Error en la subida.');
@@ -218,3 +218,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+

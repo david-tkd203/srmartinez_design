@@ -69,12 +69,12 @@
 
     <div class="dashboard-container">
         <div class="header-dash">
-            <h2 class="gta-font">Panel de DiseÃ±os</h2>
+            <h2 class="gta-font">Panel de Diseños</h2>
             <a href="/design-upload.html" class="btn-primary">Subir Nuevo</a> <button onclick="logout()" style="margin-left:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar Sesión</button>
         </div>
 
         <div class="grid-dash" id="dashGrid">
-            <p>Cargando diseÃ±os...</p>
+            <p>Cargando diseños...</p>
         </div>
     </div>
 
@@ -87,7 +87,7 @@
                 grid.innerHTML = '';
                 
                 if(designs.length === 0) {
-                    grid.innerHTML = '<p>No hay diseÃ±os subidos todavÃ­a.</p>';
+                    grid.innerHTML = '<p>No hay diseños subidos todavía.</p>';
                     return;
                 }
 
@@ -97,11 +97,11 @@
                     card.innerHTML = `
                         <video class="video-preview" src="${d.videoUrl}" muted playsinline></video>
                         <div>
-                            <label>TÃ­tulo:</label>
+                            <label>Título:</label>
                             <input type="text" id="title-${d.id}" value="${d.title}">
                         </div>
                         <div>
-                            <label>GÃ©nero:</label>
+                            <label>Género:</label>
                             <select id="gender-${d.id}">
                                 <option value="Hombre" ${d.gender==='Hombre'?'selected':''}>Hombre</option>
                                 <option value="Mujer" ${d.gender==='Mujer'?'selected':''}>Mujer</option>
@@ -109,7 +109,7 @@
                             </select>
                         </div>
                         <div>
-                            <label>DescripciÃ³n:</label>
+                            <label>Descripción:</label>
                             <textarea id="desc-${d.id}" rows="2">${d.description}</textarea>
                         </div>
                         <div class="actions">
@@ -120,12 +120,12 @@
                     grid.appendChild(card);
                 });
             } catch (error) {
-                grid.innerHTML = '<p>Error de conexiÃ³n con el backend.</p>';
+                grid.innerHTML = '<p>Error de conexión con el backend.</p>';
             }
         };
 
         const deleteDesign = async (id) => {
-            if(!confirm('Â¿EstÃ¡s seguro de eliminar este diseÃ±o?')) return;
+            if(!confirm('¿Estás seguro de eliminar este diseño?')) return;
             try {
                 await fetch('/api/designs/' + id, { method: 'DELETE' });
                 loadDashboard();
@@ -143,7 +143,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title, description: desc, gender })
                 });
-                alert('DiseÃ±o actualizado');
+                alert('Diseño actualizado');
             } catch(e) { alert('Error actualizando'); }
         };
 
@@ -155,4 +155,5 @@
     </script>
 </body>
 </html>
+
 
