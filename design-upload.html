@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Portal | Upload Design</title>
+    <link rel="icon" type="image/png" href="./logo/logo_sinfondo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .upload-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 208, 47, 0.2);
+            padding: 3rem;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .upload-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .upload-header h2 {
+            color: var(--color-primary);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-family: 'Oswald', sans-serif;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 1rem;
+            font-family: 'Poppins', sans-serif;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: var(--color-primary);
+        }
+        .form-group input[type="file"] {
+            padding: 0.8rem;
+            cursor: pointer;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+        .warning-text {
+            font-size: 0.85rem;
+            color: #ff5555;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="upload-container">
+        <div class="upload-header">
+            <h2 class="gta-font">Subir Diseño</h2>
+            <p>Portal interno de desarrollo. SrMartinez Only.</p>
+        </div>
+
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="designTitle">Título del Diseño / Organización</label>
+                <input type="text" id="designTitle" placeholder="Ej: Vanilla Unicorn" required>
+            </div>
+
+            <div class="form-group">
+                <label for="designDesc">Descripción</label>
+                <textarea id="designDesc" rows="3" placeholder="Descripción breve de las prendas..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="designGender">Género</label>
+                <select id="designGender" required>
+                    <option value="Hombre">Hombre</option>
+                    <option value="Mujer">Mujer</option>
+                    <option value="Unisex">Unisex</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="videoFile">Video de Muestra (.mp4)</label>
+                <input type="file" id="videoFile" accept="video/mp4" required>
+            </div>
+
+            <div class="form-group">
+                <label for="logoFile">Logo de Organización (.png)</label>
+                <input type="file" id="logoFile" accept="image/png" required>
+            </div>
+
+            <button type="button" class="btn-primary btn-submit" id="generateBtn">Procesar Diseño</button>
+            <p class="warning-text">Nota: El sitio actual es 100% estático. Para que esta subida guarde archivos reales en el servidor, necesitamos migrar la arquitectura a un backend Node.js.</p>
+        </form>
+    </div>
+
+</body>
+</html>
