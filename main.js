@@ -1,4 +1,4 @@
-﻿import * as THREE from 'three';
+import * as THREE from 'three';
 
 // --- Initial Animations ---
 if (window.gsap) {
@@ -7,6 +7,20 @@ if (window.gsap) {
     gsap.from('.hero-subtitle', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out', delay: 1.7 });
     gsap.from('.cta-group', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out', delay: 1.7 });
 }
+
+// --- Video Hover Logic ---
+const catalogItems = document.querySelectorAll('.catalog-card');
+catalogItems.forEach(item => {
+    const video = item.querySelector('video');
+    if (video) video.pause();
+    
+    item.addEventListener('mouseenter', () => { 
+        if (video) video.play().catch(e => console.log("Autoplay bloquedo: ", e)); 
+    });
+    item.addEventListener('mouseleave', () => { 
+        if (video) video.pause(); 
+    });
+});
 
 // --- Stats Counter Animation ---
 const statsSection = document.querySelector('.stats-section');
