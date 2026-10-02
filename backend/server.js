@@ -1,4 +1,4 @@
-﻿import express from 'express';
+import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
 import fs from 'fs';
@@ -11,6 +11,39 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Base de datos persistente
+const dbDir = path.join(__dirname, 'data');
+const dbPath = path.join(dbDir, 'designs.json');
+
+// Crear db si el volumen de Docker la oculta o está vacío
+if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+}
+if (!fs.existsSync(dbPath)) {
+    // Si no existe, podemos inicializarla con los dos diseños por defecto
+    const seedData = [
+      {
+        "id": "1",
+        "title": "Akuma Motors Club",
+        "description": "Organización Delictual. Renombre, identidad y respeto en las calles.",
+        "gender": "Hombre",
+        "videoUrl": "/videos clothes/akuma motors/hombre/Video Project (2).mp4",
+        "logoUrl": "/videos clothes/akuma motors/akuma.png",
+        "discordUrl": "https://discord.com/users/682328456746631340"
+      },
+      {
+        "id": "2",
+        "title": "Benny's Motor Works",
+        "description": "Taller Mecánico. Indumentaria que resalta calidad y excelencia en el servicio.",
+        "gender": "Hombre",
+        "videoUrl": "/videos clothes/benny's/hombre/Video Project (1).mp4",
+        "logoUrl": "/videos clothes/benny's/bennys.png",
+        "discordUrl": "https://discord.com/users/682328456746631340"
+      }
+    ];
+    fs.writeFileSync(dbPath, JSON.stringify(seedData, null, 2), 'utf8');
+}
 
 // Configuracion de subida de archivos (Multer)
 const storage = multer.diskStorage({
@@ -37,14 +70,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// API Endpoints
-const dbPath = path.join(__dirname, 'data/designs.json');
-
 app.get('/api/designs', (req, res) => {
     try {
         const data = fs.readFileSync(dbPath, 'utf8');
         res.json(JSON.parse(data));
     } catch (error) {
+        console.error("Error leyendo DB:", error);
         res.status(500).json({ error: "Error leyendo la base de datos" });
     }
 });
@@ -130,4 +161,3 @@ const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
     console.log(`Backend de SrMartinez corriendo en el puerto ${PORT}`);
 });
-
