@@ -1,4 +1,4 @@
-﻿import express from 'express';
+import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
 import fs from 'fs';
@@ -30,8 +30,8 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
-        const name = file.fieldname === 'videoFile' ? \ideo_\\ : \logo_\\;
-        cb(null, \\\\);
+        const name = file.fieldname === 'videoFile' ? `video_${Date.now()}` : `logo_${Date.now()}`;
+        cb(null, `${name}${ext}`);
     }
 });
 
@@ -58,8 +58,8 @@ app.post('/api/upload', upload.fields([{ name: 'videoFile' }, { name: 'logoFile'
         const orgFolder = title.toLowerCase().trim();
         const genderFolder = gender.toLowerCase();
         
-        const videoUrl = \/uploads/\/\/\\;
-        const logoUrl = \/uploads/\/\\;
+        const videoUrl = `/uploads/${orgFolder}/${genderFolder}/${videoFile.filename}`;
+        const logoUrl = `/uploads/${orgFolder}/${logoFile.filename}`;
 
         const newDesign = {
             id: Date.now().toString(),
@@ -89,11 +89,11 @@ app.use(express.static(path.join(__dirname, '../dist')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Fallback para SPA routing
-app.get('*', (req, res) => {
+app.use((req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
-    console.log(\Backend de SrMartinez corriendo en el puerto \\);
+    console.log(`Backend de SrMartinez corriendo en el puerto ${PORT}`);
 });
