@@ -160,7 +160,7 @@ app.delete('/api/designs/:id', verifyAuth, (req, res) => {
     }
 });
 
-app.put('/api/designs/:id', verifyAuth, (req, res) => {
+app.put('/api/designs/:id', verifyAuth, upload.fields([{ name: 'videoFile' }, { name: 'logoFile' }]), (req, res) => {
     try {
         const id = req.params.id;
         const { title, description, gender } = req.body;
@@ -171,8 +171,30 @@ app.put('/api/designs/:id', verifyAuth, (req, res) => {
             currentData[index].title = title || currentData[index].title;
             currentData[index].description = description || currentData[index].description;
             currentData[index].gender = gender || currentData[index].gender;
+            
+            if (req.files && req.files['videoFile']) {
+                const videoFile = req.files['videoFile'][0];
+                const orgFolder = currentData[index].title.toLowerCase().trim();
+                const genderFolder = currentData[index].gender.toLowerCase();
+                currentData[index].videoUrl = /uploads/ + orgFolder + / + genderFolder + / + videoFile.filename;
+            }
+
+            if (req.files && req.files['logoFile']) {
+                const logoFile = req.files['logoFile'][0];
+                const orgFolder = currentData[index].title.toLowerCase().trim();
+                currentData[index].logoUrl = /uploads/ + orgFolder + / + logoFile.filename;
+            }
+
             fs.writeFileSync(dbPath, JSON.stringify(currentData, null, 2));
             res.json({ success: true, design: currentData[index] });
+        } else {
+            res.status(404).json({ error: "Diseño no encontrado" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al editar el diseño" });
+    }
+});
         } else {
             res.status(404).json({ error: "Diseño no encontrado" });
         }
@@ -211,4 +233,5 @@ const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
     console.log(`Backend de SrMartinez corriendo en el puerto ${PORT}`);
 });
+
 

@@ -63,6 +63,8 @@
         .btn-save:hover { filter: brightness(1.1); }
         .btn-delete:hover { filter: brightness(1.1); }
         .video-preview { width: 100%; height: 150px; object-fit: cover; border-radius: 4px; background: #000; }
+        .file-input-group label { font-size: 0.8rem; color: #aaa; margin-bottom: 0.2rem; display: block; }
+        .file-input-group input[type="file"] { font-size: 0.8rem; padding: 0.3rem; }
     </style>
 </head>
 <body>
@@ -120,8 +122,16 @@
                             <label>Descripción:</label>
                             <textarea id="desc-${d.id}" rows="2">${d.description}</textarea>
                         </div>
+                        <div class="file-input-group">
+                            <label>Reemplazar Video (.mp4) Opcional:</label>
+                            <input type="file" id="video-${d.id}" accept="video/mp4">
+                        </div>
+                        <div class="file-input-group">
+                            <label>Reemplazar Logo (.png) Opcional:</label>
+                            <input type="file" id="logo-${d.id}" accept="image/png">
+                        </div>
                         <div class="actions">
-                            <button class="btn-save" onclick="updateDesign('${d.id}')">Guardar</button>
+                            <button class="btn-save" id="btn-save-${d.id}" onclick="updateDesign('${d.id}')">Guardar</button>
                             <button class="btn-delete" onclick="deleteDesign('${d.id}')">Eliminar</button>
                         </div>
                     `;
@@ -141,18 +151,41 @@
         };
 
         const updateDesign = async (id) => {
+            const btn = document.getElementById('btn-save-' + id);
+            btn.innerText = 'Guardando...';
+            btn.disabled = true;
+
             const title = document.getElementById('title-'+id).value;
             const desc = document.getElementById('desc-'+id).value;
             const gender = document.getElementById('gender-'+id).value;
+            const videoFile = document.getElementById('video-'+id).files[0];
+            const logoFile = document.getElementById('logo-'+id).files[0];
             
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', desc);
+            formData.append('gender', gender);
+            if (videoFile) formData.append('videoFile', videoFile);
+            if (logoFile) formData.append('logoFile', logoFile);
+
             try {
-                await fetch('/api/designs/' + id, {
+                const res = await fetch('/api/designs/' + id, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, description: desc, gender })
+                    body: formData
                 });
-                alert('Diseño actualizado');
-            } catch(e) { alert('Error actualizando'); }
+                
+                if (res.ok) {
+                    alert('Diseño actualizado correctamente');
+                    loadDashboard();
+                } else {
+                    alert('Error al actualizar el diseño');
+                }
+            } catch(e) { 
+                alert('Fallo de red al actualizar'); 
+            } finally {
+                btn.innerText = 'Guardar';
+                btn.disabled = false;
+            }
         };
 
         document.addEventListener('DOMContentLoaded', loadDashboard);
