@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Portal | Dashboard</title>
+    <link rel="icon" type="image/png" href="./logo/logo_sinfondo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            padding: 4rem 2rem;
+            min-height: 100vh;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header-dash {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid rgba(255, 208, 47, 0.2);
+            padding-bottom: 1rem;
+        }
+        .header-dash h2 {
+            color: var(--color-primary);
+            font-size: 2.5rem;
+        }
+        .grid-dash {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .dash-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .dash-card input, .dash-card textarea, .dash-card select {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+        }
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: auto;
+        }
+        .btn-save { background: var(--color-primary); color: var(--color-bg); padding: 0.5rem 1rem; font-weight: bold; border: none; cursor: pointer; border-radius: 4px; flex: 1; }
+        .btn-delete { background: #ff4444; color: white; padding: 0.5rem 1rem; font-weight: bold; border: none; cursor: pointer; border-radius: 4px; flex: 1; }
+        .btn-save:hover { filter: brightness(1.1); }
+        .btn-delete:hover { filter: brightness(1.1); }
+        .video-preview { width: 100%; height: 150px; object-fit: cover; border-radius: 4px; background: #000; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="header-dash">
+            <h2 class="gta-font">Panel de Diseños</h2>
+            <a href="/design-upload.html" class="btn-primary">Subir Nuevo</a>
+        </div>
+
+        <div class="grid-dash" id="dashGrid">
+            <p>Cargando diseños...</p>
+        </div>
+    </div>
+
+    <script>
+        const loadDashboard = async () => {
+            const grid = document.getElementById('dashGrid');
+            try {
+                const res = await fetch('/api/designs');
+                const designs = await res.json();
+                grid.innerHTML = '';
+                
+                if(designs.length === 0) {
+                    grid.innerHTML = '<p>No hay diseños subidos todavía.</p>';
+                    return;
+                }
+
+                designs.forEach(d => {
+                    const card = document.createElement('div');
+                    card.className = 'dash-card';
+                    card.innerHTML = `
+                        <video class="video-preview" src="${d.videoUrl}" muted playsinline></video>
+                        <div>
+                            <label>Título:</label>
+                            <input type="text" id="title-${d.id}" value="${d.title}">
+                        </div>
+                        <div>
+                            <label>Género:</label>
+                            <select id="gender-${d.id}">
+                                <option value="Hombre" ${d.gender==='Hombre'?'selected':''}>Hombre</option>
+                                <option value="Mujer" ${d.gender==='Mujer'?'selected':''}>Mujer</option>
+                                <option value="Unisex" ${d.gender==='Unisex'?'selected':''}>Unisex</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Descripción:</label>
+                            <textarea id="desc-${d.id}" rows="2">${d.description}</textarea>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-save" onclick="updateDesign('${d.id}')">Guardar</button>
+                            <button class="btn-delete" onclick="deleteDesign('${d.id}')">Eliminar</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (error) {
+                grid.innerHTML = '<p>Error de conexión con el backend.</p>';
+            }
+        };
+
+        const deleteDesign = async (id) => {
+            if(!confirm('¿Estás seguro de eliminar este diseño?')) return;
+            try {
+                await fetch('/api/designs/' + id, { method: 'DELETE' });
+                loadDashboard();
+            } catch(e) { alert('Error eliminando'); }
+        };
+
+        const updateDesign = async (id) => {
+            const title = document.getElementById('title-'+id).value;
+            const desc = document.getElementById('desc-'+id).value;
+            const gender = document.getElementById('gender-'+id).value;
+            
+            try {
+                await fetch('/api/designs/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description: desc, gender })
+                });
+                alert('Diseño actualizado');
+            } catch(e) { alert('Error actualizando'); }
+        };
+
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>

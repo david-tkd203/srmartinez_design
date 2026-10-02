@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
 import fs from 'fs';
@@ -82,6 +82,39 @@ app.post('/api/upload', upload.fields([{ name: 'videoFile' }, { name: 'logoFile'
     }
 });
 
+app.delete('/api/designs/:id', (req, res) => {
+    try {
+        const id = req.params.id;
+        let currentData = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+        const filteredData = currentData.filter(d => d.id !== id);
+        fs.writeFileSync(dbPath, JSON.stringify(filteredData, null, 2));
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: "Error al borrar el diseño" });
+    }
+});
+
+app.put('/api/designs/:id', (req, res) => {
+    try {
+        const id = req.params.id;
+        const { title, description, gender } = req.body;
+        let currentData = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+        const index = currentData.findIndex(d => d.id === id);
+        
+        if (index > -1) {
+            currentData[index].title = title || currentData[index].title;
+            currentData[index].description = description || currentData[index].description;
+            currentData[index].gender = gender || currentData[index].gender;
+            fs.writeFileSync(dbPath, JSON.stringify(currentData, null, 2));
+            res.json({ success: true, design: currentData[index] });
+        } else {
+            res.status(404).json({ error: "Diseño no encontrado" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Error al editar el diseño" });
+    }
+});
+
 // Servir frontend compilado
 app.use(express.static(path.join(__dirname, '../dist')));
 
@@ -97,3 +130,4 @@ const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
     console.log(`Backend de SrMartinez corriendo en el puerto ${PORT}`);
 });
+
