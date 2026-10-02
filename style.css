@@ -621,3 +621,14 @@ footer {
     0% { opacity: 1; visibility: visible; }
     100% { opacity: 0; visibility: hidden; }
 }
+
+/* --- Partículas 3D Hero --- */
+#webgl-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Detrás del tigre y del texto */
+    pointer-events: none; /* No bloquea clicks */
+}
