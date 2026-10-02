@@ -1,4 +1,4 @@
-﻿import express from 'express';
+import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
 import fs from 'fs';
@@ -110,7 +110,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// API Endpoints PÃšBLICOS
+// API Endpoints PÚBLICOS
 app.get('/api/designs', (req, res) => {
     try {
         const data = fs.readFileSync(dbPath, 'utf8');
@@ -176,13 +176,13 @@ app.put('/api/designs/:id', verifyAuth, upload.fields([{ name: 'videoFile' }, { 
                 const videoFile = req.files['videoFile'][0];
                 const orgFolder = currentData[index].title.toLowerCase().trim();
                 const genderFolder = currentData[index].gender.toLowerCase();
-                currentData[index].videoUrl = /uploads/ + orgFolder + / + genderFolder + / + videoFile.filename;
+                currentData[index].videoUrl = `/uploads/${orgFolder}/${genderFolder}/${videoFile.filename}`;
             }
 
             if (req.files && req.files['logoFile']) {
                 const logoFile = req.files['logoFile'][0];
                 const orgFolder = currentData[index].title.toLowerCase().trim();
-                currentData[index].logoUrl = /uploads/ + orgFolder + / + logoFile.filename;
+                currentData[index].logoUrl = `/uploads/${orgFolder}/${logoFile.filename}`;
             }
 
             fs.writeFileSync(dbPath, JSON.stringify(currentData, null, 2));
@@ -192,13 +192,6 @@ app.put('/api/designs/:id', verifyAuth, upload.fields([{ name: 'videoFile' }, { 
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Error al editar el diseño" });
-    }
-});
-        } else {
-            res.status(404).json({ error: "Diseño no encontrado" });
-        }
-    } catch (error) {
         res.status(500).json({ error: "Error al editar el diseño" });
     }
 });
@@ -233,5 +226,3 @@ const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
     console.log(`Backend de SrMartinez corriendo en el puerto ${PORT}`);
 });
-
-
