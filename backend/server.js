@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
@@ -14,9 +16,47 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// Confianza en el Proxy (Traefik/Dokploy) para Rate Limit real
+app.set('trust proxy', 1);
+
+// Seguridad de Headers y Encriptación HSTS (Fuerza TLS/SSL)
+app.use(helmet({
+    contentSecurityPolicy: false, // Desactivado temporalmente para no bloquear scripts en línea actuales
+    hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true
+    }
+}));
+
+// CORS restringido
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' ? 'https://srmartinez.site' : '*',
+    credentials: true
+}));
+
+app.use(express.json({ limit: '10kb' })); // Límite de payload para evitar DoS
 app.use(cookieParser());
+
+// Limitadores de Tasa (Rate Limiting)
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 200, // Límite de 200 peticiones por IP por ventana
+    message: { error: 'Demasiadas peticiones, intente más tarde.' }
+});
+
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5, // Solo 5 intentos de login fallidos/exitosos por IP cada 15 min (Previene Fuerza Bruta)
+    message: { error: 'Demasiados intentos de login. Bloqueado temporalmente.' }
+});
+
+const uploadLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hora
+    max: 30, // Solo 30 subidas/ediciones por hora por IP
+    message: { error: 'Límite de subida de diseños alcanzado por esta hora.' }
+});
 
 // Credenciales
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
@@ -37,12 +77,16 @@ const verifyAuth = (req, res, next) => {
 };
 
 // Autenticación Endpoints
-app.post('/api/login', (req, res) => {
+app.post('/api/login', loginLimiter, (req, res) => {
     const { username, password } = req.body;
     if (username === ADMIN_USER && password === ADMIN_PASS) {
         const token = jwt.sign({ user: username }, JWT_SECRET, { expiresIn: '24h' });
-        // HttpOnly impide que JavaScript acceda a la cookie (Protección XSS)
-        res.cookie('auth_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 });
+        res.cookie('auth_token', token, { 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production' || process.env.VIRTUAL_HOST !== undefined, 
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 
+        });
         res.json({ success: true });
     } else {
         res.status(401).json({ error: 'Credenciales incorrectas' });
@@ -54,7 +98,7 @@ app.post('/api/logout', (req, res) => {
     res.json({ success: true });
 });
 
-app.get('/api/check-auth', verifyAuth, (req, res) => {
+app.get('/api/check-auth', apiLimiter, verifyAuth, (req, res) => {
     res.json({ success: true, user: ADMIN_USER });
 });
 
@@ -62,7 +106,6 @@ app.get('/api/check-auth', verifyAuth, (req, res) => {
 const dbDir = path.join(__dirname, 'data');
 const dbPath = path.join(dbDir, 'designs.json');
 
-// Crear db si el volumen de Docker la oculta o está vacío
 if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
 }
@@ -90,7 +133,6 @@ if (!fs.existsSync(dbPath)) {
     fs.writeFileSync(dbPath, JSON.stringify(seedData, null, 2), 'utf8');
 }
 
-// Configuracion de subida de archivos (Multer)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const title = req.body.title ? req.body.title.toLowerCase().trim() : 'nuevo_diseno';
@@ -107,11 +149,10 @@ const storage = multer.diskStorage({
         cb(null, `${name}${ext}`);
     }
 });
-
 const upload = multer({ storage });
 
 // API Endpoints PÚBLICOS
-app.get('/api/designs', (req, res) => {
+app.get('/api/designs', apiLimiter, (req, res) => {
     try {
         const data = fs.readFileSync(dbPath, 'utf8');
         res.json(JSON.parse(data));
@@ -120,8 +161,8 @@ app.get('/api/designs', (req, res) => {
     }
 });
 
-// API Endpoints PRIVADOS (protegidos por verifyAuth)
-app.post('/api/upload', verifyAuth, upload.fields([{ name: 'videoFile' }, { name: 'logoFile' }]), (req, res) => {
+// API Endpoints PRIVADOS
+app.post('/api/upload', verifyAuth, uploadLimiter, upload.fields([{ name: 'videoFile' }, { name: 'logoFile' }]), (req, res) => {
     try {
         const { title, description, gender } = req.body;
         const videoFile = req.files['videoFile'][0];
@@ -148,7 +189,7 @@ app.post('/api/upload', verifyAuth, upload.fields([{ name: 'videoFile' }, { name
     }
 });
 
-app.delete('/api/designs/:id', verifyAuth, (req, res) => {
+app.delete('/api/designs/:id', verifyAuth, apiLimiter, (req, res) => {
     try {
         const id = req.params.id;
         let currentData = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
@@ -160,7 +201,7 @@ app.delete('/api/designs/:id', verifyAuth, (req, res) => {
     }
 });
 
-app.put('/api/designs/:id', verifyAuth, upload.fields([{ name: 'videoFile' }, { name: 'logoFile' }]), (req, res) => {
+app.put('/api/designs/:id', verifyAuth, uploadLimiter, upload.fields([{ name: 'videoFile' }, { name: 'logoFile' }]), (req, res) => {
     try {
         const id = req.params.id;
         const { title, description, gender } = req.body;
@@ -196,7 +237,6 @@ app.put('/api/designs/:id', verifyAuth, upload.fields([{ name: 'videoFile' }, { 
     }
 });
 
-// Interceptor de seguridad para páginas protegidas (Frontend Routing Protection)
 app.use((req, res, next) => {
     if (req.path === '/design-upload.html' || req.path === '/design-dashboard.html') {
         const token = req.cookies.auth_token;
@@ -211,13 +251,9 @@ app.use((req, res, next) => {
     next();
 });
 
-// Servir frontend compilado
 app.use(express.static(path.join(__dirname, '../dist')));
-
-// Servir carpeta de subidas persistentes
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Fallback para SPA routing
 app.use((req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
