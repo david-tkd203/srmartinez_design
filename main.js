@@ -1,4 +1,5 @@
 ﻿import * as THREE from 'three';
+
 // --- Initial Animations ---
 if (window.gsap) {
     gsap.from('.hero-main-title', { y: -20, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 1.5 });
@@ -6,16 +7,6 @@ if (window.gsap) {
     gsap.from('.hero-subtitle', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out', delay: 1.7 });
     gsap.from('.cta-group', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out', delay: 1.7 });
 }
-
-// --- Video Performance Optimization & Hover Logic ---
-const catalogItems = document.querySelectorAll('.catalog-card');
-catalogItems.forEach(item => {
-    const video = item.querySelector('video');
-    if (video) video.pause();
-    
-    item.addEventListener('mouseenter', () => { if (video) video.play().catch(e => console.log(e)); });
-    item.addEventListener('mouseleave', () => { if (video) video.pause(); });
-});
 
 // --- Stats Counter Animation ---
 const statsSection = document.querySelector('.stats-section');
@@ -49,7 +40,6 @@ if (statsSection && window.IntersectionObserver) {
     }, { threshold: 0.5 });
     observer.observe(statsSection);
 }
-
 
 // --- THREE.JS ADVANCED 3D BACKGROUND ---
 const initThreeJS = () => {
