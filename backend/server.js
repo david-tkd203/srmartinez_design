@@ -82,12 +82,12 @@ if (!fs.existsSync(dbPath)) {
     const seedData = [
       {
         "id": "1", "title": "Akuma Motors Club", "description": "Organización Delictual. Renombre, identidad y respeto en las calles.",
-        "gender": "Hombre", "videoUrl": "/videos clothes/akuma motors/hombre/Video Project (2).mp4", "logoUrl": "/videos clothes/akuma motors/akuma.png",
+        "category": "Prendas Personalizadas", "gender": "Hombre", "videoUrl": "/videos clothes/akuma motors/hombre/Video Project (2).mp4", "logoUrl": "/videos clothes/akuma motors/akuma.png",
         "cityLogoUrl": "", "discordUrl": "https://discord.com/users/682328456746631340"
       },
       {
         "id": "2", "title": "Benny's Motor Works", "description": "Taller Mecánico. Indumentaria que resalta calidad y excelencia en el servicio.",
-        "gender": "Hombre", "videoUrl": "/videos clothes/benny's/hombre/Video Project (1).mp4", "logoUrl": "/videos clothes/benny's/bennys.png",
+        "category": "Prendas Personalizadas", "gender": "Hombre", "videoUrl": "/videos clothes/benny's/hombre/Video Project (1).mp4", "logoUrl": "/videos clothes/benny's/bennys.png",
         "cityLogoUrl": "", "discordUrl": "https://discord.com/users/682328456746631340"
       }
     ];
@@ -123,7 +123,7 @@ app.get('/api/designs', apiLimiter, (req, res) => {
 
 app.post('/api/upload', verifyAuth, uploadLimiter, upload.fields([{ name: 'videoFile' }, { name: 'logoFile' }, { name: 'cityLogoFile' }]), (req, res) => {
     try {
-        const { title, description, gender } = req.body;
+        const { title, description, gender, category } = req.body;
         const videoFile = req.files['videoFile'] ? req.files['videoFile'][0] : null;
         const logoFile = req.files['logoFile'] ? req.files['logoFile'][0] : null;
         const cityLogoFile = req.files['cityLogoFile'] ? req.files['cityLogoFile'][0] : null;
@@ -136,7 +136,7 @@ app.post('/api/upload', verifyAuth, uploadLimiter, upload.fields([{ name: 'video
         const cityLogoUrl = cityLogoFile ? `/uploads/${orgFolder}/${cityLogoFile.filename}` : '';
 
         const newDesign = {
-            id: Date.now().toString(), title, description, gender, videoUrl, logoUrl, cityLogoUrl,
+            id: Date.now().toString(), title, description, category: category || 'Prendas Personalizadas', gender, videoUrl, logoUrl, cityLogoUrl,
             discordUrl: "https://discord.com/users/682328456746631340"
         };
 
@@ -164,7 +164,7 @@ app.delete('/api/designs/:id', verifyAuth, apiLimiter, (req, res) => {
 app.put('/api/designs/:id', verifyAuth, uploadLimiter, upload.fields([{ name: 'videoFile' }, { name: 'logoFile' }, { name: 'cityLogoFile' }]), (req, res) => {
     try {
         const id = req.params.id;
-        const { title, description, gender } = req.body;
+        const { title, description, gender, category } = req.body;
         let currentData = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
         const index = currentData.findIndex(d => d.id === id);
         
@@ -172,6 +172,7 @@ app.put('/api/designs/:id', verifyAuth, uploadLimiter, upload.fields([{ name: 'v
             currentData[index].title = title || currentData[index].title;
             currentData[index].description = description || currentData[index].description;
             currentData[index].gender = gender || currentData[index].gender;
+            currentData[index].category = category || currentData[index].category || 'Prendas Personalizadas';
             
             if (req.files && req.files['videoFile']) {
                 const videoFile = req.files['videoFile'][0];

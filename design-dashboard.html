@@ -159,15 +159,18 @@
             btn.innerText = 'Guardando...';
             btn.disabled = true;
 
-            const title = document.getElementById('title-'+id).value;
+                        const title = document.getElementById('title-'+id).value;
+            const category = document.getElementById('category-'+id).value;
+            const desc = document.getElementById('desc-'+id).value;
             const desc = document.getElementById('desc-'+id).value;
             const gender = document.getElementById('gender-'+id).value;
             const videoFile = document.getElementById('video-'+id).files[0];
                         const logoFile = document.getElementById('logo-'+id).files[0];
             const cityLogoFile = document.getElementById('city-'+id).files[0];
             
-            const formData = new FormData();
+                        const formData = new FormData();
             formData.append('title', title);
+            formData.append('category', category);
             formData.append('description', desc);
             formData.append('gender', gender);
             if (videoFile) formData.append('videoFile', videoFile);
@@ -198,4 +201,5 @@
     </script>
 </body>
 </html>
+
 

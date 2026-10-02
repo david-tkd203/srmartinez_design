@@ -277,6 +277,31 @@ nav a:hover { color: var(--color-primary); }
 
 .catalog-header p { color: #888; }
 
+.category-filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-text);
+    padding: 0.5rem 1.5rem;
+    border-radius: 30px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: var(--color-primary);
+    color: var(--color-bg);
+}
+
 .catalog-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, 260px);
@@ -476,7 +501,32 @@ nav a:hover { color: var(--color-primary); }
     .hero-title { font-size: 4rem; }
     .hero-title span { font-size: 2.5rem; }
     .catalog-main-title { font-size: 3rem; }
-    .catalog-grid { grid-template-columns: 1fr; }
+    .category-filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-text);
+    padding: 0.5rem 1.5rem;
+    border-radius: 30px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: var(--color-primary);
+    color: var(--color-bg);
+}
+
+.catalog-grid { grid-template-columns: 1fr; }
     .cta-group { flex-direction: column; }
 }
 /* --- Stats Section --- */
@@ -696,4 +746,5 @@ footer {
     letter-spacing: 1px;
     box-shadow: 0 0 10px rgba(255, 208, 47, 0.3);
 }
+
 
