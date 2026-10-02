@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -83,24 +83,24 @@
 
     <div class="upload-container">
         <div class="upload-header">
-            <h2 class="gta-font">Subir Diseño</h2>
+            <h2 class="gta-font">Subir DiseÃ±o</h2>
             <p>Portal interno de desarrollo. SrMartinez Only.</p> 
-            <button onclick="logout()" style="margin-top:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar Sesión</button>
+            <button onclick="logout()" style="margin-top:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar SesiÃ³n</button>
         </div>
 
         <form id="uploadForm">
             <div class="form-group">
-                <label for="designTitle">Título del Diseño / Organización</label>
+                <label for="designTitle">TÃ­tulo del DiseÃ±o / OrganizaciÃ³n</label>
                 <input type="text" id="designTitle" placeholder="Ej: Vanilla Unicorn" required>
             </div>
 
             <div class="form-group">
-                <label for="designDesc">Descripción</label>
-                <textarea id="designDesc" rows="3" placeholder="Descripción breve de las prendas..." required></textarea>
+                <label for="designDesc">DescripciÃ³n</label>
+                <textarea id="designDesc" rows="3" placeholder="DescripciÃ³n breve de las prendas..." required></textarea>
             </div>
 
             <div class="form-group">
-                <label for="designGender">Género</label>
+                <label for="designGender">GÃ©nero</label>
                 <select id="designGender" required>
                     <option value="Hombre">Hombre</option>
                     <option value="Mujer">Mujer</option>
@@ -113,12 +113,17 @@
                 <input type="file" id="videoFile" accept="video/mp4" required>
             </div>
 
-            <div class="form-group">
+                        <div class="form-group">
                 <label for="logoFile">Logo de Organización (.png)</label>
                 <input type="file" id="logoFile" accept="image/png" required>
             </div>
 
-            <button type="button" class="btn-primary btn-submit" id="generateBtn">Procesar Diseño</button>
+            <div class="form-group">
+                <label for="cityLogoFile">Logo de la Ciudad/Server (.png) Opcional</label>
+                <input type="file" id="cityLogoFile" accept="image/png, image/jpeg">
+            </div>
+
+            <button type="button" class="btn-primary btn-submit" id="generateBtn">Procesar DiseÃ±o</button>
             <a href="/design-dashboard.html" style="display:block; text-align:center; margin-top:1rem; color:var(--color-primary); font-family:'Poppins', sans-serif;">Ir al Panel de Control</a>
         </form>
     </div>
@@ -142,7 +147,10 @@ if (btn) {
         formData.append('title', document.getElementById('designTitle').value);
         formData.append('description', document.getElementById('designDesc').value);
         formData.append('gender', document.getElementById('designGender').value);
-        formData.append('videoFile', document.getElementById('videoFile').files[0]);
+                formData.append('videoFile', document.getElementById('videoFile').files[0]);
+        formData.append('logoFile', document.getElementById('logoFile').files[0]);
+        const cityLogo = document.getElementById('cityLogoFile').files[0];
+        if (cityLogo) formData.append('cityLogoFile', cityLogo);
         formData.append('logoFile', document.getElementById('logoFile').files[0]);
 
         try {
@@ -152,7 +160,7 @@ if (btn) {
             });
             
             if (res.ok) {
-                alert('¡Diseño subido con éxito!');
+                alert('Â¡DiseÃ±o subido con Ã©xito!');
                 form.reset();
             } else {
                 alert('Error en la subida.');
@@ -160,7 +168,7 @@ if (btn) {
         } catch (err) {
             alert('Fallo de red.');
         } finally {
-            btn.innerText = 'Procesar Diseño';
+            btn.innerText = 'Procesar DiseÃ±o';
             btn.disabled = false;
         }
     });
@@ -168,3 +176,4 @@ if (btn) {
 </script>
 </body>
 </html>
+

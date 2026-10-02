@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -71,15 +71,15 @@
 
     <div class="dashboard-container">
         <div class="header-dash">
-            <h2 class="gta-font">Panel de Diseños</h2>
+            <h2 class="gta-font">Panel de DiseÃ±os</h2>
             <div>
                 <a href="/design-upload.html" class="btn-primary">Subir Nuevo</a>
-                <button onclick="logout()" style="margin-left:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar Sesión</button>
+                <button onclick="logout()" style="margin-left:1rem; background:transparent; border:1px solid #ff4444; color:#ff4444; padding:0.5rem 1rem; cursor:pointer;">Cerrar SesiÃ³n</button>
             </div>
         </div>
 
         <div class="grid-dash" id="dashGrid">
-            <p>Cargando diseños...</p>
+            <p>Cargando diseÃ±os...</p>
         </div>
     </div>
 
@@ -97,7 +97,7 @@
                 grid.innerHTML = '';
                 
                 if(designs.length === 0) {
-                    grid.innerHTML = '<p>No hay diseños subidos todavía.</p>';
+                    grid.innerHTML = '<p>No hay diseÃ±os subidos todavÃ­a.</p>';
                     return;
                 }
 
@@ -107,11 +107,11 @@
                     card.innerHTML = `
                         <video class="video-preview" src="${d.videoUrl}" muted playsinline></video>
                         <div>
-                            <label>Título:</label>
+                            <label>TÃ­tulo:</label>
                             <input type="text" id="title-${d.id}" value="${d.title}">
                         </div>
                         <div>
-                            <label>Género:</label>
+                            <label>GÃ©nero:</label>
                             <select id="gender-${d.id}">
                                 <option value="Hombre" ${d.gender==='Hombre'?'selected':''}>Hombre</option>
                                 <option value="Mujer" ${d.gender==='Mujer'?'selected':''}>Mujer</option>
@@ -119,16 +119,20 @@
                             </select>
                         </div>
                         <div>
-                            <label>Descripción:</label>
+                            <label>DescripciÃ³n:</label>
                             <textarea id="desc-${d.id}" rows="2">${d.description}</textarea>
                         </div>
                         <div class="file-input-group">
                             <label>Reemplazar Video (.mp4) Opcional:</label>
                             <input type="file" id="video-${d.id}" accept="video/mp4">
                         </div>
-                        <div class="file-input-group">
-                            <label>Reemplazar Logo (.png) Opcional:</label>
+                                                <div class="file-input-group">
+                            <label>Reemplazar Logo Org (.png) Opcional:</label>
                             <input type="file" id="logo-${d.id}" accept="image/png">
+                        </div>
+                        <div class="file-input-group">
+                            <label>Reemplazar Logo Ciudad (.png) Opcional:</label>
+                            <input type="file" id="city-${d.id}" accept="image/png, image/jpeg">
                         </div>
                         <div class="actions">
                             <button class="btn-save" id="btn-save-${d.id}" onclick="updateDesign('${d.id}')">Guardar</button>
@@ -138,12 +142,12 @@
                     grid.appendChild(card);
                 });
             } catch (error) {
-                grid.innerHTML = '<p>Error de conexión con el backend.</p>';
+                grid.innerHTML = '<p>Error de conexiÃ³n con el backend.</p>';
             }
         };
 
         const deleteDesign = async (id) => {
-            if(!confirm('¿Estás seguro de eliminar este diseño?')) return;
+            if(!confirm('Â¿EstÃ¡s seguro de eliminar este diseÃ±o?')) return;
             try {
                 await fetch('/api/designs/' + id, { method: 'DELETE' });
                 loadDashboard();
@@ -159,7 +163,8 @@
             const desc = document.getElementById('desc-'+id).value;
             const gender = document.getElementById('gender-'+id).value;
             const videoFile = document.getElementById('video-'+id).files[0];
-            const logoFile = document.getElementById('logo-'+id).files[0];
+                        const logoFile = document.getElementById('logo-'+id).files[0];
+            const cityLogoFile = document.getElementById('city-'+id).files[0];
             
             const formData = new FormData();
             formData.append('title', title);
@@ -167,6 +172,7 @@
             formData.append('gender', gender);
             if (videoFile) formData.append('videoFile', videoFile);
             if (logoFile) formData.append('logoFile', logoFile);
+            if (cityLogoFile) formData.append('cityLogoFile', cityLogoFile);
 
             try {
                 const res = await fetch('/api/designs/' + id, {
@@ -175,10 +181,10 @@
                 });
                 
                 if (res.ok) {
-                    alert('Diseño actualizado correctamente');
+                    alert('DiseÃ±o actualizado correctamente');
                     loadDashboard();
                 } else {
-                    alert('Error al actualizar el diseño');
+                    alert('Error al actualizar el diseÃ±o');
                 }
             } catch(e) { 
                 alert('Fallo de red al actualizar'); 
@@ -192,3 +198,4 @@
     </script>
 </body>
 </html>
+
