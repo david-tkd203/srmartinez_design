@@ -143,18 +143,32 @@ app.post('/api/track-visit', async (req, res) => {
             try {
                 const isPrivate = /^(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.|127\.|::1)/.test(ip);
                 if (ip && !isPrivate && ip !== '::') {
-                    // Usar ipwho.is que soporta HTTPS y no suele bloquear datacenters
-                    const geoRes = await fetch(`https://ipwho.is/${ip}`);
-                    if (geoRes.ok) {
-                        const geoData = await geoRes.json();
-                        if (geoData.success) {
-                            location = `${geoData.city}, ${geoData.country}`;
-                        }
-                    }
+                    const http = await import('http');
+                    location = await new Promise((resolve) => {
+                        http.get(`http://ip-api.com/json/${ip}`, (response) => {
+                            let data = '';
+                            response.on('data', chunk => data += chunk);
+                            response.on('end', () => {
+                                try {
+                                    const geo = JSON.parse(data);
+                                    if (geo.status === 'success') {
+                                        resolve(`${geo.city}, ${geo.country}`);
+                                    } else {
+                                        resolve(`Error API: ${geo.message}`);
+                                    }
+                                } catch (err) {
+                                    resolve('Error JSON');
+                                }
+                            });
+                        }).on('error', (err) => {
+                            resolve(`Fallo HTTP`);
+                        });
+                    });
                 } else if (isPrivate) {
                     location = 'Red Local (IP Privada)';
                 }
             } catch (e) {
+                location = `Fallo Catch`;
                 console.error("Geolocalización falló para IP:", ip);
             }
 
