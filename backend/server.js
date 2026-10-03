@@ -118,9 +118,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-app.post('/api/track-visit', (req, res) => {
+app.post('/api/track-visit', async (req, res) => {
     try {
-        const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        let ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        // Limpiar IP si viene con formato IPv6 a IPv4 (ej: ::ffff:192.168.0.1)
+        if (ip && ip.includes('::ffff:')) {
+            ip = ip.split('::ffff:')[1];
+        }
+        
         const userAgent = req.headers['user-agent'] || 'Desconocido';
         const date = new Date().toISOString();
         
@@ -131,7 +136,23 @@ app.post('/api/track-visit', (req, res) => {
         const recentVisit = visits.find(v => v.ip === ip && new Date(v.date) > thirtyMinsAgo);
         
         if (!recentVisit) {
-            visits.push({ ip, userAgent, date });
+            let location = 'Desconocida';
+            try {
+                // No consultar IPs locales
+                if (ip && !ip.includes('127.0.0.1') && !ip.includes('::1') && ip !== '::') {
+                    const geoRes = await fetch(`http://ip-api.com/json/${ip}`);
+                    if (geoRes.ok) {
+                        const geoData = await geoRes.json();
+                        if (geoData.status === 'success') {
+                            location = `${geoData.city}, ${geoData.country}`;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Geolocalización falló para IP:", ip);
+            }
+
+            visits.push({ ip, userAgent, location, date });
             fs.writeFileSync(visitsPath, JSON.stringify(visits, null, 2));
         }
         res.json({ success: true });
