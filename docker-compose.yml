@@ -14,5 +14,9 @@ services:
     env_file:
       - .env
     volumes:
-      - ./backend-data:/app/backend/data
-      - ./uploads:/app/backend/uploads
+      - backend-data:/app/backend/data
+      - uploads:/app/backend/uploads
+
+volumes:
+  backend-data:
+  uploads:
