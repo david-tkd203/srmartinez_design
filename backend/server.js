@@ -120,14 +120,12 @@ const upload = multer({ storage });
 
 app.post('/api/track-visit', async (req, res) => {
     try {
-        let ip = req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '';
+        let ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.ip || req.socket.remoteAddress || '';
         
-        // Si hay multiples IPs por proxies encadenados (ej: Dokploy + Cloudflare), agarramos la primera (real)
         if (ip && ip.includes(',')) {
             ip = ip.split(',')[0].trim();
         }
 
-        // Limpiar IP si viene con formato IPv6 a IPv4 (ej: ::ffff:192.168.0.1)
         if (ip && ip.includes('::ffff:')) {
             ip = ip.split('::ffff:')[1];
         }
@@ -137,25 +135,24 @@ app.post('/api/track-visit', async (req, res) => {
         
         const visits = JSON.parse(fs.readFileSync(visitsPath, 'utf8'));
         
-        // Evitar spam: solo contar si la IP no visitó en los últimos 30 min
         const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000);
         const recentVisit = visits.find(v => v.ip === ip && new Date(v.date) > thirtyMinsAgo);
         
         if (!recentVisit) {
             let location = 'Desconocida';
             try {
-                // No consultar IPs locales privadas de Docker/Dokploy
                 const isPrivate = /^(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.|127\.|::1)/.test(ip);
                 if (ip && !isPrivate && ip !== '::') {
-                    const geoRes = await fetch(`http://ip-api.com/json/${ip}`);
+                    // Usar ipwho.is que soporta HTTPS y no suele bloquear datacenters
+                    const geoRes = await fetch(`https://ipwho.is/${ip}`);
                     if (geoRes.ok) {
                         const geoData = await geoRes.json();
-                        if (geoData.status === 'success') {
+                        if (geoData.success) {
                             location = `${geoData.city}, ${geoData.country}`;
-                        } else {
-                            console.error("Geo API rechazó la IP:", ip, "Motivo:", geoData.message);
                         }
                     }
+                } else if (isPrivate) {
+                    location = 'Red Local (IP Privada)';
                 }
             } catch (e) {
                 console.error("Geolocalización falló para IP:", ip);
