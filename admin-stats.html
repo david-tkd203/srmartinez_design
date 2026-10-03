@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Portal | Estadísticas</title>
+    <link rel="icon" type="image/png" href="./logo/logo_sinfondo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            padding: 4rem 2rem;
+            min-height: 100vh;
+        }
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header-dash {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid rgba(255, 208, 47, 0.2);
+            padding-bottom: 1rem;
+        }
+        .header-dash h2 {
+            color: var(--color-primary);
+            font-size: 2.5rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .stat-card h3 {
+            font-size: 1.2rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .stat-card .number {
+            font-size: 4rem;
+            color: var(--color-primary);
+            font-family: var(--font-heading);
+            text-shadow: 0 0 15px rgba(255, 208, 47, 0.3);
+        }
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 2rem;
+            overflow-x: auto;
+        }
+        .table-container h3 {
+            margin-bottom: 1.5rem;
+            color: var(--color-primary);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        th {
+            color: #888;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        td.date-cell { color: var(--color-primary); }
+    </style>
+</head>
+<body>
+
+    <div class="stats-container">
+        
+        <div class="admin-menu">
+            <a href="/design-dashboard.html">Panel de Diseños</a>
+            <a href="/design-upload.html">Subir Nuevo</a>
+            <a href="/admin-stats.html" class="active">Estadísticas y Visitas</a>
+            <button onclick="logout()">Cerrar Sesión</button>
+        </div>
+
+        <div class="header-dash">
+            <h2 class="gta-font">Estadísticas de Tráfico</h2>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total de Visitas</h3>
+                <div class="number" id="totalVisits">--</div>
+            </div>
+            <div class="stat-card">
+                <h3>Visitantes Únicos (IPs)</h3>
+                <div class="number" id="uniqueVisits">--</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h3>Últimas 50 Visitas (Protección Anti-Spam de 30m activa)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>IP del Visitante</th>
+                        <th>Navegador / Dispositivo</th>
+                    </tr>
+                </thead>
+                <tbody id="visitsTable">
+                    <tr><td colspan="3">Cargando datos...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const logout = async () => {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/login.html';
+        };
+
+        const loadStats = async () => {
+            try {
+                const res = await fetch('/api/admin/stats');
+                if(!res.ok) throw new Error();
+                const data = await res.json();
+                
+                document.getElementById('totalVisits').innerText = data.totalVisits;
+                document.getElementById('uniqueVisits').innerText = data.uniqueIps;
+
+                const tbody = document.getElementById('visitsTable');
+                tbody.innerHTML = '';
+
+                if(data.recentVisits.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3">No hay visitas registradas todavía.</td></tr>';
+                    return;
+                }
+
+                data.recentVisits.forEach(v => {
+                    const dateObj = new Date(v.date);
+                    const dateString = dateObj.toLocaleDateString('es-AR') + ' ' + dateObj.toLocaleTimeString('es-AR');
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="date-cell">${dateString}</td>
+                        <td>${v.ip}</td>
+                        <td style="font-size: 0.8rem; color: #aaa;">${v.userAgent}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                document.getElementById('visitsTable').innerHTML = '<tr><td colspan="3" style="color:red;">Error cargando estadísticas.</td></tr>';
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', loadStats);
+    </script>
+</body>
+</html>

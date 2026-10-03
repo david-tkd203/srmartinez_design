@@ -76,6 +76,7 @@ app.get('/api/check-auth', apiLimiter, verifyAuth, (req, res) => {
 
 const dbDir = path.join(__dirname, 'data');
 const dbPath = path.join(dbDir, 'designs.json');
+const visitsPath = path.join(dbDir, 'visits.json');
 
 if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
 if (!fs.existsSync(dbPath)) {
@@ -92,6 +93,9 @@ if (!fs.existsSync(dbPath)) {
       }
     ];
     fs.writeFileSync(dbPath, JSON.stringify(seedData, null, 2), 'utf8');
+}
+if (!fs.existsSync(visitsPath)) {
+    fs.writeFileSync(visitsPath, JSON.stringify([], null, 2), 'utf8');
 }
 
 const storage = multer.diskStorage({
@@ -113,6 +117,44 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage });
+
+app.post('/api/track-visit', (req, res) => {
+    try {
+        const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        const userAgent = req.headers['user-agent'] || 'Desconocido';
+        const date = new Date().toISOString();
+        
+        const visits = JSON.parse(fs.readFileSync(visitsPath, 'utf8'));
+        
+        // Evitar spam: solo contar si la IP no visitó en los últimos 30 min
+        const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000);
+        const recentVisit = visits.find(v => v.ip === ip && new Date(v.date) > thirtyMinsAgo);
+        
+        if (!recentVisit) {
+            visits.push({ ip, userAgent, date });
+            fs.writeFileSync(visitsPath, JSON.stringify(visits, null, 2));
+        }
+        res.json({ success: true });
+    } catch (error) {
+        console.error("Error en track-visit:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.get('/api/admin/stats', verifyAuth, (req, res) => {
+    try {
+        const visits = JSON.parse(fs.readFileSync(visitsPath, 'utf8'));
+        const totalVisits = visits.length;
+        const uniqueIps = new Set(visits.map(v => v.ip)).size;
+        
+        // Obtener las ultimas 50 visitas para la tabla
+        const recentVisits = visits.slice(-50).reverse();
+        
+        res.json({ totalVisits, uniqueIps, recentVisits });
+    } catch (error) {
+        res.status(500).json({ error: "Fallo leyendo estadísticas" });
+    }
+});
 
 app.get('/api/designs', apiLimiter, (req, res) => {
     try {
@@ -203,7 +245,7 @@ app.put('/api/designs/:id', verifyAuth, uploadLimiter, upload.fields([{ name: 'v
 });
 
 app.use((req, res, next) => {
-    if (req.path === '/design-upload.html' || req.path === '/design-dashboard.html') {
+    if (req.path === '/design-upload.html' || req.path === '/design-dashboard.html' || req.path === '/admin-stats.html') {
         const token = req.cookies.auth_token;
         if (!token) return res.redirect('/login.html');
         try { jwt.verify(token, JWT_SECRET); return next(); } 

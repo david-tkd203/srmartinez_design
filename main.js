@@ -204,10 +204,13 @@ const loadCatalog = async () => {
         if (grid) grid.innerHTML = '<p>Error cargando los diseños. Intente más tarde.</p>';
     }
 };document.addEventListener("DOMContentLoaded", () => {
+    // Analytics
+    fetch('/api/track-visit', { method: 'POST' }).catch(() => {});
     loadCatalog();
     
     // Upload logic moved to design-upload.html
 });
+
 
 
 
