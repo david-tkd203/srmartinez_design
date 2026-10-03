@@ -387,16 +387,7 @@ nav a:hover { color: var(--color-primary); }
     opacity: 0.8;
 }
 
-.catalog-card:hover .org-logo {
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    width: 90px;
-    height: auto;
-    z-index: 5;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.9));
-    transition: transform 0.4s ease;
-}
+.catalog-card:hover .org-logo { transform: scale(1.15) rotate(3deg); }
 
 .city-logo {
     position: absolute;
@@ -855,4 +846,5 @@ footer {
     .upload-container { padding: 1.5rem; border-radius: 8px; }
     .upload-container h2 { font-size: 2rem; }
 }
+
 
