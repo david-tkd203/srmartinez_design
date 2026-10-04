@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Portal | Estadísticas</title>
+    <title>Dev Portal | EstadÃ­sticas</title>
     <link rel="icon" type="image/png" href="./logo/logo_sinfondo.png">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
@@ -81,6 +81,12 @@
             text-transform: uppercase;
         }
         td.date-cell { color: var(--color-primary); }
+            @media (max-width: 768px) {
+            body { padding: 2rem 1rem !important; }
+            .stats-container, .dashboard-container, .upload-container { padding: 0 !important; width: 100%; box-sizing: border-box; }
+            .table-container { padding: 1rem !important; }
+            .dash-card { padding: 1rem !important; }
+        }
     </style>
 </head>
 <body>
@@ -88,14 +94,14 @@
     <div class="stats-container">
         
         <div class="admin-menu">
-            <a href="/design-dashboard.html">Panel de Diseños</a>
+            <a href="/design-dashboard.html">Panel de DiseÃ±os</a>
             <a href="/design-upload.html">Subir Nuevo</a>
-            <a href="/admin-stats.html" class="active">Estadísticas y Visitas</a>
-            <button onclick="logout()">Cerrar Sesión</button>
+            <a href="/admin-stats.html" class="active">EstadÃ­sticas y Visitas</a>
+            <button onclick="logout()">Cerrar SesiÃ³n</button>
         </div>
 
         <div class="header-dash">
-            <h2 class="gta-font">Estadísticas de Tráfico</h2>
+            <h2 class="gta-font">EstadÃ­sticas de TrÃ¡fico</h2>
         </div>
 
         <div class="stats-grid">
@@ -104,19 +110,19 @@
                 <div class="number" id="totalVisits">--</div>
             </div>
             <div class="stat-card">
-                <h3>Visitantes Únicos (IPs)</h3>
+                <h3>Visitantes Ãšnicos (IPs)</h3>
                 <div class="number" id="uniqueVisits">--</div>
             </div>
         </div>
 
         <div class="table-container">
-            <h3>Últimas 50 Visitas (Protección Anti-Spam de 30m activa)</h3>
+            <h3>Ãšltimas 50 Visitas (ProtecciÃ³n Anti-Spam de 30m activa)</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Fecha y Hora</th>
                         <th>IP del Visitante</th>
-                        <th>Ubicación</th>
+                        <th>UbicaciÃ³n</th>
                         <th>Navegador / Dispositivo</th>
                     </tr>
                 </thead>
@@ -146,7 +152,7 @@
                 tbody.innerHTML = '';
 
                 if(data.recentVisits.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4">No hay visitas registradas todavía.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4">No hay visitas registradas todavÃ­a.</td></tr>';
                     return;
                 }
 
@@ -165,7 +171,7 @@
                 });
 
             } catch (error) {
-                document.getElementById('visitsTable').innerHTML = '<tr><td colspan="4" style="color:red;">Error cargando estadísticas.</td></tr>';
+                document.getElementById('visitsTable').innerHTML = '<tr><td colspan="4" style="color:red;">Error cargando estadÃ­sticas.</td></tr>';
             }
         };
 
@@ -173,3 +179,4 @@
     </script>
 </body>
 </html>
+

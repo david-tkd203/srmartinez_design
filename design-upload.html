@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Portal | Subir Diseño</title>
+    <title>Dev Portal | Subir DiseÃ±o</title>
     <link rel="icon" type="image/png" href="./logo/logo_sinfondo.png">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
@@ -61,32 +61,38 @@
             font-size: 1.2rem;
             margin-top: 1rem;
         }
+            @media (max-width: 768px) {
+            body { padding: 2rem 1rem !important; }
+            .stats-container, .dashboard-container, .upload-container { padding: 0 !important; width: 100%; box-sizing: border-box; }
+            .table-container { padding: 1rem !important; }
+            .dash-card { padding: 1rem !important; }
+        }
     </style>
 </head>
 <body>
 
     <div class="admin-menu" style="width: 100%; max-width: 600px;">
-        <a href="/design-dashboard.html">Panel de Diseños</a>
+        <a href="/design-dashboard.html">Panel de DiseÃ±os</a>
         <a href="/design-upload.html" class="active">Subir Nuevo</a>
-        <a href="/admin-stats.html">Estadísticas y Visitas</a>
-        <button onclick="logout()">Cerrar Sesión</button>
+        <a href="/admin-stats.html">EstadÃ­sticas y Visitas</a>
+        <button onclick="logout()">Cerrar SesiÃ³n</button>
     </div>
 
     <div class="upload-container">
         <form id="uploadForm">
-            <h2 class="gta-font">Subir Diseño</h2>
+            <h2 class="gta-font">Subir DiseÃ±o</h2>
             
             <div class="form-group">
-                <label for="title">Título del Diseño / Organización</label>
+                <label for="title">TÃ­tulo del DiseÃ±o / OrganizaciÃ³n</label>
                 <input type="text" id="title" placeholder="Ej: Akuma Motors Club" required>
             </div>
 
             <div class="form-group">
-                <label for="category">Categoría (Sección)</label>
+                <label for="category">CategorÃ­a (SecciÃ³n)</label>
                 <input type="text" id="category" list="category-options" placeholder="Ej: Prendas Personalizadas" value="Prendas Personalizadas" required>
                 <datalist id="category-options">
                     <option value="Prendas Personalizadas"></option>
-                    <option value="Vehículos Personalizados"></option>
+                    <option value="VehÃ­culos Personalizados"></option>
                     <option value="Mapeos"></option>
                     <option value="Scripts"></option>
                     <option value="Otros"></option>
@@ -94,7 +100,7 @@
             </div>
 
             <div class="form-group">
-                <label for="gender">Género (Si aplica)</label>
+                <label for="gender">GÃ©nero (Si aplica)</label>
                 <select id="gender" required>
                     <option value="Hombre">Hombre</option>
                     <option value="Mujer">Mujer</option>
@@ -104,8 +110,8 @@
             </div>
 
             <div class="form-group">
-                <label for="description">Descripción</label>
-                <textarea id="description" rows="3" placeholder="Detalles del diseño..." required></textarea>
+                <label for="description">DescripciÃ³n</label>
+                <textarea id="description" rows="3" placeholder="Detalles del diseÃ±o..." required></textarea>
             </div>
 
             <div class="form-group">
@@ -114,7 +120,7 @@
             </div>
 
             <div class="form-group">
-                <label for="logoFile">Logo de Organización (.png)</label>
+                <label for="logoFile">Logo de OrganizaciÃ³n (.png)</label>
                 <input type="file" id="logoFile" accept="image/png" required>
             </div>
 
@@ -123,7 +129,7 @@
                 <input type="file" id="cityLogoFile" accept="image/png, image/jpeg">
             </div>
 
-            <button type="button" class="btn-primary btn-submit" id="generateBtn">Procesar Diseño</button>
+            <button type="button" class="btn-primary btn-submit" id="generateBtn">Procesar DiseÃ±o</button>
         </form>
     </div>
 
@@ -151,7 +157,7 @@
 
             if(!document.getElementById('title').value || !document.getElementById('videoFile').files[0] || !document.getElementById('logoFile').files[0]) {
                 alert('Faltan campos obligatorios');
-                btn.innerText = 'Procesar Diseño';
+                btn.innerText = 'Procesar DiseÃ±o';
                 btn.disabled = false;
                 return;
             }
@@ -163,7 +169,7 @@
                 });
 
                 if (res.ok) {
-                    alert('¡Diseño subido con éxito!');
+                    alert('Â¡DiseÃ±o subido con Ã©xito!');
                     window.location.href = '/design-dashboard.html';
                 } else {
                     const err = await res.json();
@@ -172,10 +178,11 @@
             } catch (error) {
                 alert('Fallo de red al conectar con el servidor.');
             } finally {
-                btn.innerText = 'Procesar Diseño';
+                btn.innerText = 'Procesar DiseÃ±o';
                 btn.disabled = false;
             }
         });
     </script>
 </body>
 </html>
+
